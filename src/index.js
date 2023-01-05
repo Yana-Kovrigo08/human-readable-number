@@ -1,67 +1,85 @@
-var a = [
-    "",
-    "one ",
-    "two ",
-    "three ",
-    "four ",
-    "five ",
-    "six ",
-    "seven ",
-    "eight ",
-    "nine ",
-    "ten ",
-    "eleven ",
-    "twelve ",
-    "thirteen ",
-    "fourteen ",
-    "fifteen ",
-    "sixteen ",
-    "seventeen ",
-    "eighteen ",
-    "nineteen ",
-];
-var b = [
-    "",
-    "",
-    "twenty",
-    "thirty",
-    "forty",
-    "fifty",
-    "sixty",
-    "seventy",
-    "eighty",
-    "ninety",
-];
-
 module.exports = function toReadable(number) {
-    if ((number = number.toString()).length > 9) return "overflow";
-    n = ("000000000" + number)
-        .substr(-9)
-        .match(/^(\d{2})(\d{2})(\d{2})(\d{1})(\d{2})$/);
-    if (!n) return;
-    var str = "";
-    str +=
-        n[1] != 0
-            ? (a[Number(n[1])] || b[n[1][0]] + " " + a[n[1][1]]) + "crore "
-            : "";
-    str +=
-        n[2] != 0
-            ? (a[Number(n[2])] || b[n[2][0]] + " " + a[n[2][1]]) + "lakh "
-            : "";
-    str +=
-        n[3] != 0
-            ? (a[Number(n[3])] || b[n[3][0]] + " " + a[n[3][1]]) + "thousand "
-            : "";
-    str +=
-        n[4] != 0
-            ? (a[Number(n[4])] || b[n[4][0]] + " " + a[n[4][1]]) + "hundred "
-            : "";
-    str +=
-        n[5] != 0
-            ? (str != "" ? "and " : "") +
-              (a[Number(n[5])] || b[n[5][0]] + " " + a[n[5][1]]) +
-              "only "
-            : "";
-    return str;
-};
+    var number_arr = number.toString().split("");
+    var number_leng = number_arr.length;
+    var res_str = "";
+    var i = 0;
+    if (number_leng == 0) {
+        res_str = "non";
+    }
 
+    one_units = [
+        "zero",
+        "one",
+        "two",
+        "three",
+        "four",
+        "five",
+        "six",
+        "seven",
+        "eight",
+        "nine",
+    ];
+    two_units = [
+        "ten",
+        "eleven",
+        "twelve",
+        "thirteen",
+        "fourteen",
+        "fifteen",
+        "sixteen",
+        "seventeen",
+        "eighteen",
+        "nineteen",
+    ];
+    tens = [
+        "",
+        "",
+        "twenty",
+        "thirty",
+        "forty",
+        "fifty",
+        "sixty",
+        "seventy",
+        "eighty",
+        "ninety",
+    ];
+    scales = ["", "", "hundred", "thousand", "million", "billion", "trillion"];
+    // 0-9
+    if (number_leng == 1) {
+        res_str = one_units[number_arr[0] - "0"];
+        return res_str;
+    }
+
+    while (i < number_leng) {
+        if (number_leng >= 3) {
+            if (number_arr[i] - "0" != 0) {
+                res_str =
+                    res_str +
+                    one_units[number_arr[i]] +
+                    " " +
+                    scales[number_leng - 1] +
+                    " ";
+            }
+            number_leng--;
+        } else {
+            // 10-19
+            if (number_arr[i] - "0" == 1) {
+                res_str = res_str + two_units[number_arr[i + 1]] + " ";
+                return res_str.trim();
+            }
+            // 20-99
+            else {
+                if (number_arr[i] > 0) {
+                    res_str = res_str + tens[number_arr[i]] + " ";
+                }
+                i++;
+                //console.log( number_arr[i + 1] );
+                if (number_arr[i] - "0" != 0) {
+                    res_str = res_str + one_units[number_arr[i]] + " ";
+                }
+            }
+        }
+        i++;
+    }
+    return res_str.trim();
+};
